@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component } from '@angular/core'
 
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
+import { Geolocation, Position } from '@capacitor/geolocation'
+import { Share } from '@capacitor/share'
 
 @Component({
   selector: 'app-home',
@@ -10,6 +12,7 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 export class HomePage {
 
   public myImage: string | null = null;
+  public position: Position | null = null;
 
   constructor() {}
 
@@ -24,4 +27,19 @@ export class HomePage {
     this.myImage = image.webPath || null;
   }
 
+  async getCurrentPosition() {
+    this.position = await Geolocation.getCurrentPosition();
+  }
+
+  async share() {
+    if(!this.position) return;
+
+    await Share.share({
+      title: 'Here I am',
+      text: `My location is:
+        lat:  ${this.position.coords.latitude},
+        long: ${this.position.coords.longitude}`,
+      url: 'https://example.com'
+    });
+  }
 }
